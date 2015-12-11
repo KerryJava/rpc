@@ -6,7 +6,7 @@
 package json2
 
 import (
-	"bytes"
+	// "bytes"
 	"encoding/json"
 	"log"
 
@@ -180,15 +180,15 @@ func (c *CodecRequest) writeServerResponse(w http.ResponseWriter, res *serverRes
 	// Id is null for notifications and they don't have a response.
 	if c.request.Id != nil {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		b, err := json.Marshal(res)
-		if err != nil {
-			log.Fatal(err)
-		}
-		var out bytes.Buffer
-		json.Indent(&out, b, "", "  ")
-		out.WriteTo(w)
-		// encoder := json.NewEncoder(c.encoder.Encode(w))
-		// err := encoder.Encode(res)
+		// b, err := json.Marshal(res)
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
+		// var out bytes.Buffer
+		// json.Indent(&out, b, "", "  ")
+		// out.WriteTo(w)
+		encoder := json.NewEncoder(c.encoder.Encode(w))
+		err := encoder.Encode(res)
 		// err := encoder.EncodeIndent(res, "", "  ")
 
 		// Not sure in which case will this happen. But seems harmless.
