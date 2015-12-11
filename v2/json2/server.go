@@ -95,6 +95,13 @@ func newCodecRequest(r *http.Request, encoder rpc.Encoder) rpc.CodecRequest {
 			Data:    req,
 		}
 	}
+
+	log.Println("method", req.Method)
+	if req.Params != nil {
+		b, _ := req.Params.MarshalJSON()
+		log.Println("params", string(b))
+	}
+
 	if req.Version != Version {
 		err = &Error{
 			Code:    E_INVALID_REQ,
