@@ -10,6 +10,8 @@ import (
 	"net/http"
 
 	"github.com/KerryJava/rpc/v2"
+	"log"
+
 )
 
 var null = json.RawMessage([]byte("null"))
