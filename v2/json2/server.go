@@ -6,12 +6,15 @@
 package json2
 
 import (
+	"bytes"
 	"encoding/json"
-	"net/http"
-
-	"github.com/KerryJava/rpc/v2"
 	"log"
 
+	"net/http"
+
+	// "github.com/klauspost/json" // for encode with indent
+
+	"github.com/KerryJava/rpc/v2"
 )
 
 var null = json.RawMessage([]byte("null"))
@@ -97,13 +100,11 @@ func newCodecRequest(r *http.Request, encoder rpc.Encoder) rpc.CodecRequest {
 			Data:    req,
 		}
 	}
-
 	log.Println("method", req.Method)
 	if req.Params != nil {
 		b, _ := req.Params.MarshalJSON()
 		log.Println("params", string(b))
 	}
-
 	if req.Version != Version {
 		err = &Error{
 			Code:    E_INVALID_REQ,
@@ -179,8 +180,16 @@ func (c *CodecRequest) writeServerResponse(w http.ResponseWriter, res *serverRes
 	// Id is null for notifications and they don't have a response.
 	if c.request.Id != nil {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		encoder := json.NewEncoder(c.encoder.Encode(w))
-		err := encoder.Encode(res)
+		b, err := json.Marshal(res)
+		if err != nil {
+			log.Fatal(err)
+		}
+		var out bytes.Buffer
+		json.Indent(&out, b, "", "  ")
+		out.WriteTo(w)
+		// encoder := json.NewEncoder(c.encoder.Encode(w))
+		// err := encoder.Encode(res)
+		// err := encoder.EncodeIndent(res, "", "  ")
 
 		// Not sure in which case will this happen. But seems harmless.
 		if err != nil {
